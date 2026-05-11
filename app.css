@@ -101,17 +101,62 @@ body {
   background: rgba(15, 23, 42, 0.55);
 }
 
+.player-initials {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #cbd5f5;
+}
+
 .shanghai-btn {
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 8px;
   border-radius: 12px;
   border: 1px solid rgba(249, 115, 22, 0.5);
   background: rgba(249, 115, 22, 0.15);
   color: #fde68a;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  line-height: 1.1;
+  display: grid;
+  gap: 4px;
+  place-items: center;
+  justify-items: center;
+  text-align: center;
   transition: transform 0.12s ease, background 0.2s ease, border 0.2s ease;
+}
+
+.shanghai-btn span {
+  display: block;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.shanghai-break {
+  white-space: nowrap;
+}
+
+.shanghai-break .shanghai-num {
+  display: inline;
+}
+
+@media (max-width: 520px) {
+  .shanghai-btn {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    padding: 6px 6px;
+  }
+
+  .shanghai-break {
+    white-space: normal;
+  }
+
+  .shanghai-break .shanghai-num {
+    display: block;
+  }
 }
 
 .shanghai-btn:active {
@@ -161,6 +206,17 @@ body {
 .history-text {
   font-size: 14px;
   color: #e2e8f0;
+}
+
+.history-toggle {
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.5);
+  color: #cbd5f5;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .ranking-row {

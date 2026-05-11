@@ -22,6 +22,7 @@ const state = {
   gameActive: false,
   actionLog: [],
   showHistory: false,
+  showAllHistory: false,
   flashCells: [],
   flashScores: []
 };
@@ -53,7 +54,8 @@ function pushHistory() {
     players: state.players,
     gameActive: state.gameActive,
     actionLog: state.actionLog,
-    showHistory: state.showHistory
+    showHistory: state.showHistory,
+    showAllHistory: state.showAllHistory
   }));
 }
 
@@ -64,6 +66,7 @@ function undoLast() {
   state.gameActive = prev.gameActive;
   state.actionLog = prev.actionLog || [];
   state.showHistory = Boolean(prev.showHistory);
+  state.showAllHistory = Boolean(prev.showAllHistory);
   renderGame();
 }
 
@@ -73,6 +76,7 @@ function startGame(initialsList) {
   state.gameActive = true;
   state.actionLog = [];
   state.showHistory = false;
+  state.showAllHistory = false;
   renderGame();
 }
 
@@ -81,7 +85,6 @@ function addLog(message) {
     message,
     time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
   });
-  state.actionLog = state.actionLog.slice(0, 30);
 }
 
 function applyShanghai(playerId, points, label) {
@@ -265,16 +268,23 @@ function renderHitDots(hit, isCellClosed) {
 }
 
 function renderGame() {
+  const visibleHistory = state.showAllHistory ? state.actionLog : state.actionLog.slice(0, 30);
   const colCount = state.players.length + 1;
   const gridStyle = `grid-template-columns: repeat(${colCount}, minmax(0, 1fr));`;
 
   const headers = state.players.map(p => `
     <div class="score-card text-center">
-      <div class="text-xs uppercase tracking-widest text-slate-400">${p.initials}</div>
+      <div class="player-initials">${p.initials}</div>
       <div class="text-2xl font-black text-amber-200 score-value" data-score="${p.id}">${p.score}</div>
       <div class="mt-3 space-y-2">
-        <button class="shanghai-btn" data-shanghai="50" data-player="${p.id}">Shangai +50</button>
-        <button class="shanghai-btn shanghai-alt" data-shanghai="25" data-player="${p.id}">Shangai decale +25</button>
+        <button class="shanghai-btn" data-shanghai="50" data-player="${p.id}">
+          <span>SHA</span>
+          <span>+50</span>
+        </button>
+        <button class="shanghai-btn shanghai-alt" data-shanghai="25" data-player="${p.id}">
+          <span>SHA</span>
+          <span class="shanghai-break">DEC <span class="shanghai-num">+25</span></span>
+        </button>
       </div>
     </div>
   `).join("");
@@ -322,9 +332,12 @@ function renderGame() {
       </div>
 
       <div class="panel rounded-3xl p-4 shadow-xl ${state.showHistory ? "" : "hidden"}" id="historyPanel">
-        <div class="text-xs uppercase tracking-widest text-slate-400">Derniers coups</div>
+        <div class="flex items-center justify-between">
+          <div class="text-xs uppercase tracking-widest text-slate-400">Derniers coups</div>
+          <button id="historyToggleBtn" class="history-toggle">${state.showAllHistory ? "Voir moins" : "Tout afficher"}</button>
+        </div>
         <div class="mt-3 space-y-2">
-          ${state.actionLog.length === 0 ? "<div class=\"text-sm text-slate-400\">Aucune action pour le moment.</div>" : state.actionLog.map(entry => `
+          ${state.actionLog.length === 0 ? "<div class=\"text-sm text-slate-400\">Aucune action pour le moment.</div>" : visibleHistory.map(entry => `
             <div class="history-row">
               <div class="history-time">${entry.time}</div>
               <div class="history-text">${entry.message}</div>
@@ -357,6 +370,14 @@ function renderGame() {
     state.showHistory = !state.showHistory;
     renderGame();
   });
+
+  const historyToggle = document.getElementById("historyToggleBtn");
+  if (historyToggle) {
+    historyToggle.addEventListener("click", () => {
+      state.showAllHistory = !state.showAllHistory;
+      renderGame();
+    });
+  }
 
   app.querySelectorAll("button[data-player]").forEach(btn => {
     if (btn.dataset.number) {
