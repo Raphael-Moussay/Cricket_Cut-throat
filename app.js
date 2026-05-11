@@ -13,12 +13,17 @@ const app = document.getElementById("app");
 const winModal = document.getElementById("winModal");
 const winTitle = document.getElementById("winTitle");
 const winSubtitle = document.getElementById("winSubtitle");
+const winRanking = document.getElementById("winRanking");
 const winClose = document.getElementById("winClose");
 
 const state = {
   players: [],
   history: [],
-  gameActive: false
+  gameActive: false,
+  actionLog: [],
+  showHistory: false,
+  flashCells: [],
+  flashScores: []
 };
 
 function createPlayer(id, initials) {
@@ -46,7 +51,9 @@ function isNumberDead(num) {
 function pushHistory() {
   state.history.push(deepClone({
     players: state.players,
-    gameActive: state.gameActive
+    gameActive: state.gameActive,
+    actionLog: state.actionLog,
+    showHistory: state.showHistory
   }));
 }
 
@@ -55,6 +62,8 @@ function undoLast() {
   const prev = state.history.pop();
   state.players = prev.players;
   state.gameActive = prev.gameActive;
+  state.actionLog = prev.actionLog || [];
+  state.showHistory = Boolean(prev.showHistory);
   renderGame();
 }
 
@@ -62,7 +71,42 @@ function startGame(initialsList) {
   state.players = initialsList.map((ini, idx) => createPlayer(idx + 1, ini));
   state.history = [];
   state.gameActive = true;
+  state.actionLog = [];
+  state.showHistory = false;
   renderGame();
+}
+
+function addLog(message) {
+  state.actionLog.unshift({
+    message,
+    time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+  });
+  state.actionLog = state.actionLog.slice(0, 30);
+}
+
+function applyShanghai(playerId, points, label) {
+  if (!state.gameActive) return;
+
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) return;
+
+  pushHistory();
+
+  const targets = [];
+  state.players.forEach(other => {
+    if (other.id !== player.id) {
+      other.score += points;
+      targets.push(other.initials);
+      state.flashScores.push(other.id);
+    }
+  });
+
+  if (targets.length > 0) {
+    addLog(`${player.initials} ${label}: +${points} a ${targets.join(", ")}`);
+  }
+
+  renderGame();
+  checkVictory();
 }
 
 function handleHit(playerId, num) {
@@ -78,24 +122,38 @@ function handleHit(playerId, num) {
   pushHistory();
 
   if (!alreadyClosed) {
-    player.hits[num] = Math.min(3, player.hits[num] + 1);
+    const nextHit = Math.min(3, player.hits[num] + 1);
+    player.hits[num] = nextHit;
+    addLog(`${player.initials} touche ${numberLabels[num]} (${nextHit}/3)`);
   } else {
     // Cut-throat: penalize players who have not closed this number.
+    const targets = [];
     state.players.forEach(other => {
       if (other.id !== player.id && !isClosed(other, num)) {
         other.score += num;
+        targets.push(other.initials);
+        state.flashCells.push({ playerId: other.id, num });
       }
     });
+    if (targets.length > 0) {
+      addLog(`${player.initials} penalise ${targets.join(", ")} +${num}`);
+    }
   }
 
   const nowComplete = isComplete(player);
   if (!wasComplete && nowComplete) {
     // House rule: completion penalty for others who are not yet complete.
+    const targets = [];
     state.players.forEach(other => {
       if (other.id !== player.id && !isComplete(other)) {
         other.score += 50;
+        targets.push(other.initials);
+        state.flashScores.push(other.id);
       }
     });
+    if (targets.length > 0) {
+      addLog(`${player.initials} complete la grille: +50 a ${targets.join(", ")}`);
+    }
   }
 
   renderGame();
@@ -106,13 +164,26 @@ function checkVictory() {
   const completed = state.players.filter(p => isComplete(p));
   if (completed.length === 0) return;
 
-  const lowestScore = Math.min(...completed.map(p => p.score));
-  const winners = completed.filter(p => p.score === lowestScore);
+  state.gameActive = false;
+
+  const lowestScore = Math.min(...state.players.map(p => p.score));
+  const winners = state.players.filter(p => p.score === lowestScore);
   if (winners.length === 0) return;
 
   const names = winners.map(p => p.initials).join(" & ");
   winTitle.textContent = names;
   winSubtitle.textContent = `Score le plus bas: ${lowestScore}`;
+  const ranking = [...state.players].sort((a, b) => a.score - b.score);
+  winRanking.innerHTML = ranking.map((player, index) => {
+    const trophy = index === 0 ? "" : "";
+    return `
+      <div class="ranking-row">
+        <div class="ranking-rank">${index + 1}</div>
+        <div class="ranking-name">${player.initials}</div>
+        <div class="ranking-score">${player.score}</div>
+      </div>
+    `;
+  }).join("");
   winModal.classList.remove("hidden");
   winModal.classList.add("flex");
 }
@@ -200,7 +271,11 @@ function renderGame() {
   const headers = state.players.map(p => `
     <div class="score-card text-center">
       <div class="text-xs uppercase tracking-widest text-slate-400">${p.initials}</div>
-      <div class="text-2xl font-black text-amber-200">${p.score}</div>
+      <div class="text-2xl font-black text-amber-200 score-value" data-score="${p.id}">${p.score}</div>
+      <div class="mt-3 space-y-2">
+        <button class="shanghai-btn" data-shanghai="50" data-player="${p.id}">Shangai +50</button>
+        <button class="shanghai-btn shanghai-alt" data-shanghai="25" data-player="${p.id}">Shangai decale +25</button>
+      </div>
     </div>
   `).join("");
 
@@ -209,10 +284,12 @@ function renderGame() {
     const playerCells = state.players.map(p => {
       const hit = p.hits[num];
       const closed = hit >= 3;
+      const shouldFlash = state.flashCells.some(flash => flash.playerId === p.id && flash.num === num);
       const cellClass = [
         "hit-cell",
         closed ? "closed" : "",
-        dead ? "dead" : ""
+        dead ? "dead" : "",
+        shouldFlash ? "penalty-flash" : ""
       ].join(" ");
 
       return `
@@ -238,7 +315,22 @@ function renderGame() {
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <button id="newGameBtn" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm">Nouvelle partie</button>
-        <button id="undoBtn" class="rounded-2xl bg-amber-400 px-4 py-2 text-sm font-bold text-slate-900">Annuler</button>
+        <div class="flex items-center gap-2">
+          <button id="historyBtn" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm">Historique</button>
+          <button id="undoBtn" class="rounded-2xl bg-amber-400 px-4 py-2 text-sm font-bold text-slate-900">Annuler</button>
+        </div>
+      </div>
+
+      <div class="panel rounded-3xl p-4 shadow-xl ${state.showHistory ? "" : "hidden"}" id="historyPanel">
+        <div class="text-xs uppercase tracking-widest text-slate-400">Derniers coups</div>
+        <div class="mt-3 space-y-2">
+          ${state.actionLog.length === 0 ? "<div class=\"text-sm text-slate-400\">Aucune action pour le moment.</div>" : state.actionLog.map(entry => `
+            <div class="history-row">
+              <div class="history-time">${entry.time}</div>
+              <div class="history-text">${entry.message}</div>
+            </div>
+          `).join("")}
+        </div>
       </div>
 
       <div class="panel rounded-3xl p-4 shadow-xl">
@@ -261,13 +353,47 @@ function renderGame() {
 
   document.getElementById("undoBtn").addEventListener("click", undoLast);
 
+  document.getElementById("historyBtn").addEventListener("click", () => {
+    state.showHistory = !state.showHistory;
+    renderGame();
+  });
+
   app.querySelectorAll("button[data-player]").forEach(btn => {
+    if (btn.dataset.number) {
+      btn.addEventListener("click", () => {
+        const playerId = Number(btn.dataset.player);
+        const num = Number(btn.dataset.number);
+        handleHit(playerId, num);
+      });
+    }
+  });
+
+  app.querySelectorAll("button[data-shanghai]").forEach(btn => {
     btn.addEventListener("click", () => {
       const playerId = Number(btn.dataset.player);
-      const num = Number(btn.dataset.number);
-      handleHit(playerId, num);
+      const points = Number(btn.dataset.shanghai);
+      const label = points === 50 ? "Shangai" : "Shangai decale";
+      applyShanghai(playerId, points, label);
     });
   });
+
+  if (state.flashScores.length > 0) {
+    state.flashScores.forEach(id => {
+      const target = app.querySelector(`.score-value[data-score="${id}"]`);
+      if (target) target.classList.add("score-flash");
+    });
+    setTimeout(() => {
+      app.querySelectorAll(".score-flash").forEach(node => node.classList.remove("score-flash"));
+    }, 900);
+    state.flashScores = [];
+  }
+
+  if (state.flashCells.length > 0) {
+    setTimeout(() => {
+      app.querySelectorAll(".penalty-flash").forEach(node => node.classList.remove("penalty-flash"));
+    }, 900);
+    state.flashCells = [];
+  }
 }
 
 winClose.addEventListener("click", () => {
