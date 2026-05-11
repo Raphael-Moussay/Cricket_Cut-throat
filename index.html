@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cricket Cut-throat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div id="app" class="max-w-5xl mx-auto p-4"></div>
+
+  <div id="winModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 p-4">
+    <div class="modal-panel w-full max-w-md rounded-3xl text-slate-900 shadow-xl">
+      <div class="p-6 text-center">
+        <div class="text-sm uppercase tracking-widest">Victoire</div>
+        <div id="winTitle" class="mt-2 text-2xl font-black"></div>
+        <div id="winSubtitle" class="mt-2 text-sm"></div>
+        <button id="winClose" class="mt-6 w-full rounded-xl bg-slate-900 px-4 py-3 text-white">Continuer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
