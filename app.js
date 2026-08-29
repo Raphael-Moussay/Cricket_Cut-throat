@@ -48,11 +48,69 @@ const MAX_CONDENSED_HISTORY_COUNT = 30;
 /** Duration in milliseconds for score and hit cell flash animations. */
 const FLASH_ANIMATION_DURATION_MS = 900;
 
+/** Haptic vibration duration in milliseconds for standard hits. */
+const VIBRATION_HIT_MS = 25;
+
+/** Haptic vibration pattern for closing a target number. */
+const VIBRATION_CLOSE_PATTERN = Object.freeze([40, 50, 40]);
+
+/** Haptic vibration pattern for Shanghai or penalty strikes. */
+const VIBRATION_PENALTY_PATTERN = Object.freeze([60, 40, 60]);
+
+/** Haptic vibration pattern for a zero-point turn (clown). */
+const VIBRATION_ZERO_PATTERN = Object.freeze([30, 40, 70]);
+
+/** Haptic vibration pattern on match victory. */
+const VIBRATION_VICTORY_PATTERN = Object.freeze([100, 80, 100, 80, 200]);
+
 /** CSS column width for the frozen targets column. */
 const GRID_TARGET_COLUMN_WIDTH = "56px";
 
 /** CSS minimum column width for each player column. */
 const GRID_PLAYER_COLUMN_MIN_WIDTH = "70px";
+
+/** @type {WakeLockSentinel|null} Active screen wake lock instance */
+let wakeLock = null;
+
+/**
+ * Triggers haptic vibration feedback if supported by the browser/device.
+ * @param {number|ReadonlyArray<number>} pattern - Vibration duration or array pattern.
+ * @returns {void}
+ */
+function triggerHapticFeedback(pattern) {
+  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    try {
+      navigator.vibrate(/** @type {number[]} */ (pattern));
+    } catch (_) {
+      // Ignore devices/browsers that block vibrate
+    }
+  }
+}
+
+/**
+ * Requests a screen wake lock to keep the device display active during gameplay.
+ * @returns {Promise<void>}
+ */
+async function requestWakeLock() {
+  if (typeof navigator !== "undefined" && "wakeLock" in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+    } catch (_) {
+      // Ignore wakeLock failures (e.g. low battery mode)
+    }
+  }
+}
+
+/**
+ * Releases the active screen wake lock.
+ * @returns {void}
+ */
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().catch(() => {});
+    wakeLock = null;
+  }
+}
 
 /** @type {HTMLElement} Main application container */
 const app = document.getElementById("app");
@@ -205,6 +263,7 @@ function undoLast() {
   state.showHistory = Boolean(previousState.showHistory);
   state.showAllHistory = Boolean(previousState.showAllHistory);
   state.lastHit = previousState.lastHit || { playerId: null, targetNumber: null, count: 0 };
+  triggerHapticFeedback(VIBRATION_HIT_MS);
   renderGame();
 }
 
@@ -223,6 +282,8 @@ function startGame(initialsList) {
   state.flashCells = [];
   state.flashScores = [];
   state.lastHit = { playerId: null, targetNumber: null, count: 0 };
+  requestWakeLock();
+  triggerHapticFeedback(VIBRATION_CLOSE_PATTERN);
   renderGame();
 }
 
@@ -267,6 +328,7 @@ function applyShanghai(playerId, points, label) {
 
   if (targetNames.length > 0) {
     addLog(`${player.initials} ${label}: +${points} a ${targetNames.join(", ")}`);
+    triggerHapticFeedback(VIBRATION_PENALTY_PATTERN);
   }
 
   renderGame();
@@ -290,6 +352,7 @@ function handleZero(playerId) {
   state.flashCells.push({ playerId, num: TARGET_NUMBER_ZERO });
 
   addLog(`${player.initials} fait un tour a 0 🤡`);
+  triggerHapticFeedback(VIBRATION_ZERO_PATTERN);
   renderGame();
 }
 
@@ -330,6 +393,11 @@ function handleHit(playerId, targetNumber) {
     const nextHit = Math.min(HITS_TO_CLOSE, player.hits[targetNumber] + 1);
     player.hits[targetNumber] = nextHit;
     addLog(`${player.initials} touche ${TARGET_LABELS[targetNumber]} (${nextHit}/${HITS_TO_CLOSE})`);
+    if (nextHit === HITS_TO_CLOSE) {
+      triggerHapticFeedback(VIBRATION_CLOSE_PATTERN);
+    } else {
+      triggerHapticFeedback(VIBRATION_HIT_MS);
+    }
   } else {
     // Cut-throat rule: penalize opponents who have not closed this target
     const targetNames = [];
@@ -342,6 +410,7 @@ function handleHit(playerId, targetNumber) {
     });
     if (targetNames.length > 0) {
       addLog(`${player.initials} penalise ${targetNames.join(", ")} +${targetNumber}`);
+      triggerHapticFeedback(VIBRATION_PENALTY_PATTERN);
     }
   }
 
@@ -376,6 +445,8 @@ function checkVictory() {
   if (completedPlayers.length === 0) return;
 
   state.gameActive = false;
+  releaseWakeLock();
+  triggerHapticFeedback(VIBRATION_VICTORY_PATTERN);
 
   const lowestScore = Math.min(...state.players.map(p => p.score));
   const winners = state.players.filter(p => p.score === lowestScore);
@@ -727,6 +798,7 @@ function renderGame() {
   }
 
   document.getElementById("newGameBtn").addEventListener("click", () => {
+    releaseWakeLock();
     winModal.classList.add("hidden");
     winModal.classList.remove("flex");
     renderStart();
@@ -795,6 +867,19 @@ winClose.addEventListener("click", () => {
   winModal.classList.remove("flex");
 });
 
-// Initial boot
+/**
+ * Registers the PWA Service Worker for offline support.
+ * @returns {void}
+ */
+function registerServiceWorker() {
+  if (typeof window !== "undefined" && typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+}
+
+// Register service worker and boot start screen
+registerServiceWorker();
 renderStart();
 
