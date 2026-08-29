@@ -361,24 +361,24 @@ function renderStart() {
 
   app.innerHTML = `
     <div class="mx-auto max-w-xl">
-      <div class="panel rounded-3xl p-6 shadow-xl">
+      <div class="panel rounded-3xl p-6 shadow-2xl border-2 border-cyan-500/20">
         <div class="flex items-center justify-between">
           <div>
-            <div class="app-title text-3xl">Cricket Cut-throat</div>
-            <p class="mt-1 text-sm text-slate-300">Tableau de bord mobile pour le mode Penalty.</p>
+            <div class="app-title text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Cricket Cut-throat</div>
+            <p class="mt-1 text-xs sm:text-sm text-slate-400">Arcade Electronic Darts • Mode Penalty</p>
           </div>
-          <div class="hidden sm:block rounded-2xl bg-amber-400/20 px-3 py-2 text-xs uppercase tracking-widest text-amber-200">Cut-throat</div>
+          <div class="hidden sm:block rounded-xl bg-cyan-500/10 border border-cyan-500/30 px-3 py-1.5 text-xs font-chakra font-extrabold uppercase tracking-widest text-cyan-300">Neo-Arcade</div>
         </div>
 
         <div class="mt-8 space-y-5">
           <div>
             <div class="step-tag">Joueurs</div>
-            <label class="mt-2 block text-sm text-slate-300">Initiales des joueurs (saisie progressive)</label>
+            <label class="mt-2 block text-xs uppercase tracking-wider font-extrabold text-slate-400 font-chakra">Saisie des initiales</label>
             <div id="playerInputsList" class="mt-3 space-y-3"></div>
           </div>
         </div>
 
-        <button id="startBtn" class="mt-8 w-full rounded-2xl bg-amber-400 px-4 py-4 text-lg font-bold text-slate-900 shadow-lg shadow-amber-400/20 hover:brightness-105 active:scale-[0.99] transition-all">Démarrer la partie</button>
+        <button id="startBtn" class="mt-8 w-full rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-4 py-4 text-base sm:text-lg font-chakra font-extrabold uppercase tracking-wider text-slate-950 shadow-lg shadow-cyan-500/30 hover:brightness-110 active:scale-[0.99] transition-all">START GAME</button>
       </div>
     </div>
   `;
@@ -584,10 +584,10 @@ function renderGame() {
   app.innerHTML = `
     <div class="space-y-4">
       <div class="flex items-center justify-between">
-        <button id="newGameBtn" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm hover:bg-slate-700 active:scale-95 transition-all">Nouvelle partie</button>
+        <button id="newGameBtn" class="rounded-xl bg-white/5 border border-white/15 px-3.5 py-2 text-xs font-chakra uppercase font-extrabold text-cyan-300 hover:bg-cyan-500/10 active:scale-95 transition-all">Nouvelle partie</button>
         <div class="flex items-center gap-2">
-          <button id="historyBtn" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm hover:bg-slate-700 active:scale-95 transition-all">Historique</button>
-          <button id="undoBtn" class="rounded-2xl bg-amber-400 px-4 py-2 text-sm font-bold text-slate-900 hover:brightness-105 active:scale-95 transition-all">Annuler</button>
+          <button id="historyBtn" class="rounded-xl bg-white/5 border border-white/15 px-3.5 py-2 text-xs font-chakra uppercase font-extrabold text-slate-300 hover:bg-white/10 active:scale-95 transition-all">Historique</button>
+          <button id="undoBtn" class="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-300 px-3.5 py-2 text-xs font-chakra uppercase font-black text-slate-950 shadow-md shadow-amber-400/30 hover:brightness-110 active:scale-95 transition-all">Annuler</button>
         </div>
       </div>
 
