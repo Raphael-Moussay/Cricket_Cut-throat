@@ -4,6 +4,9 @@
  */
 const TARGET_NUMBERS = Object.freeze([20, 19, 18, 17, 16, 15, 25]);
 
+/** Target number representing a zero-point turn (clown). */
+const TARGET_NUMBER_ZERO = 0;
+
 /**
  * Display labels for each target number.
  * @type {Readonly<Record<number, string>>}
@@ -70,6 +73,9 @@ const winClose = document.getElementById("winClose");
  * @property {string} initials - Player initials (up to 3 uppercase characters).
  * @property {number} score - Current penalty score of the player.
  * @property {Record<number, number>} hits - Number of hits recorded per target number.
+ * @property {number} zeros - Count of zero-point turns scored (clown).
+ * @property {number} doubles - Count of double-hit sequences scored.
+ * @property {number} triples - Count of triple-hit sequences scored.
  */
 
 /**
@@ -85,6 +91,13 @@ const winClose = document.getElementById("winClose");
  */
 
 /**
+ * @typedef {Object} LastHitTracker
+ * @property {number|null} playerId - Player identifier of the last action.
+ * @property {number|null} targetNumber - Target number of the last action.
+ * @property {number} count - Consecutive hit count for that target.
+ */
+
+/**
  * @typedef {Object} GameState
  * @property {Player[]} players - Active players in the match.
  * @property {Array<Object>} history - Undo stack storing previous state snapshots.
@@ -94,6 +107,7 @@ const winClose = document.getElementById("winClose");
  * @property {boolean} showAllHistory - Toggle to display all or condensed history items.
  * @property {FlashCell[]} flashCells - List of cells scheduled for penalty flash animation.
  * @property {number[]} flashScores - List of player IDs whose score cards should flash.
+ * @property {LastHitTracker} lastHit - Tracker for consecutive hits to detect doubles and triples.
  */
 
 /** @type {GameState} Central reactive application state */
@@ -105,7 +119,8 @@ const state = {
   showHistory: false,
   showAllHistory: false,
   flashCells: [],
-  flashScores: []
+  flashScores: [],
+  lastHit: { playerId: null, targetNumber: null, count: 0 }
 };
 
 /**
@@ -117,7 +132,7 @@ const state = {
 function createPlayer(id, initials) {
   const hits = {};
   TARGET_NUMBERS.forEach(n => { hits[n] = 0; });
-  return { id, initials, score: 0, hits };
+  return { id, initials, score: 0, hits, zeros: 0, doubles: 0, triples: 0 };
 }
 
 /**
@@ -162,13 +177,18 @@ function isNumberDead(targetNumber) {
  * Saves a snapshot of current game state onto the history stack for undo operations.
  * @returns {void}
  */
+/**
+ * Saves a snapshot of current game state onto the history stack for undo operations.
+ * @returns {void}
+ */
 function pushHistory() {
   state.history.push(deepClone({
     players: state.players,
     gameActive: state.gameActive,
     actionLog: state.actionLog,
     showHistory: state.showHistory,
-    showAllHistory: state.showAllHistory
+    showAllHistory: state.showAllHistory,
+    lastHit: state.lastHit
   }));
 }
 
@@ -184,6 +204,7 @@ function undoLast() {
   state.actionLog = previousState.actionLog || [];
   state.showHistory = Boolean(previousState.showHistory);
   state.showAllHistory = Boolean(previousState.showAllHistory);
+  state.lastHit = previousState.lastHit || { playerId: null, targetNumber: null, count: 0 };
   renderGame();
 }
 
@@ -201,6 +222,7 @@ function startGame(initialsList) {
   state.showAllHistory = false;
   state.flashCells = [];
   state.flashScores = [];
+  state.lastHit = { playerId: null, targetNumber: null, count: 0 };
   renderGame();
 }
 
@@ -231,6 +253,9 @@ function applyShanghai(playerId, points, label) {
 
   pushHistory();
 
+  // Reset consecutive streak on Shanghai
+  state.lastHit = { playerId, targetNumber: -1, count: 0 };
+
   const targetNames = [];
   state.players.forEach(otherPlayer => {
     if (otherPlayer.id !== player.id) {
@@ -249,8 +274,29 @@ function applyShanghai(playerId, points, label) {
 }
 
 /**
+ * Handles a zero-point turn for a specific player (recorded as a clown turn 🤡).
+ * @param {number} playerId - Identifier of the player scoring zero.
+ * @returns {void}
+ */
+function handleZero(playerId) {
+  if (!state.gameActive) return;
+  const player = state.players.find(p => p.id === playerId);
+  if (!player) return;
+
+  pushHistory();
+
+  player.zeros += 1;
+  state.lastHit = { playerId, targetNumber: TARGET_NUMBER_ZERO, count: 1 };
+  state.flashCells.push({ playerId, num: TARGET_NUMBER_ZERO });
+
+  addLog(`${player.initials} fait un tour a 0 🤡`);
+  renderGame();
+}
+
+/**
  * Handles a dart hit event for a specific player on a target number.
  * Implements Cut-throat rules: if closed, scores penalty on opponents who have not closed it.
+ * Tracks consecutive hits to compute doubles and triples accurately.
  * @param {number} playerId - Identifier of the player registering the hit.
  * @param {number} targetNumber - Hit target number.
  * @returns {void}
@@ -266,6 +312,19 @@ function handleHit(playerId, targetNumber) {
   const alreadyClosed = isClosed(player, targetNumber);
 
   pushHistory();
+
+  // Track doubles and triples sequence
+  if (state.lastHit && state.lastHit.playerId === playerId && state.lastHit.targetNumber === targetNumber) {
+    state.lastHit.count += 1;
+    if (state.lastHit.count === 2) {
+      player.doubles += 1;
+    } else if (state.lastHit.count === 3) {
+      player.doubles = Math.max(0, player.doubles - 1);
+      player.triples += 1;
+    }
+  } else {
+    state.lastHit = { playerId, targetNumber, count: 1 };
+  }
 
   if (!alreadyClosed) {
     const nextHit = Math.min(HITS_TO_CLOSE, player.hits[targetNumber] + 1);
@@ -309,6 +368,7 @@ function handleHit(playerId, targetNumber) {
 /**
  * Checks if the game has ended by verifying if any player has completed all targets.
  * In Cut-throat Cricket, the winner is the player who completed all targets with the lowest score.
+ * Displays final ranking with scores, zeros (🤡), doubles, and triples stats.
  * @returns {void}
  */
 function checkVictory() {
@@ -323,16 +383,34 @@ function checkVictory() {
 
   const winnerNames = winners.map(p => p.initials).join(" & ");
   winTitle.textContent = winnerNames;
-  winSubtitle.textContent = `Score le plus bas: ${lowestScore}`;
+  winSubtitle.textContent = `Score le plus bas: ${lowestScore} pts`;
 
   const ranking = [...state.players].sort((playerA, playerB) => playerA.score - playerB.score);
-  winRanking.innerHTML = ranking.map((player, index) => `
-    <div class="ranking-row">
-      <div class="ranking-rank">${index + 1}</div>
-      <div class="ranking-name">${player.initials}</div>
-      <div class="ranking-score">${player.score}</div>
-    </div>
-  `).join("");
+  winRanking.innerHTML = ranking.map((player, index) => {
+    const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}.`;
+    return `
+      <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="font-chakra font-bold text-amber-400 text-sm">${medal}</span>
+            <span class="font-chakra font-bold text-white text-base">${player.initials}</span>
+          </div>
+          <div class="font-chakra font-black text-emerald-400 text-lg">${player.score} <span class="text-xs font-normal text-slate-400">pts</span></div>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-chakra pt-2 border-t border-white/5 text-slate-300 flex-wrap">
+          <span class="inline-flex items-center gap-1 bg-rose-500/10 text-rose-300 px-2 py-0.5 rounded-md border border-rose-500/20">
+            🤡 ${player.zeros} ${player.zeros <= 1 ? "zéro" : "zéros"}
+          </span>
+          <span class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded-md border border-amber-500/20">
+            🎯 ${player.doubles} ${player.doubles <= 1 ? "double" : "doubles"}
+          </span>
+          <span class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-300 px-2 py-0.5 rounded-md border border-emerald-500/20">
+            🔥 ${player.triples} ${player.triples <= 1 ? "triple" : "triples"}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join("");
 
   winModal.classList.remove("hidden");
   winModal.classList.add("flex");
@@ -581,6 +659,29 @@ function renderGame() {
     `;
   }).join("");
 
+  const zeroRowPlayerCells = state.players.map(p => {
+    const shouldFlash = state.flashCells.some(flash => flash.playerId === p.id && flash.num === TARGET_NUMBER_ZERO);
+    const cellClass = [
+      "hit-cell",
+      "zero-cell",
+      shouldFlash ? "penalty-flash" : ""
+    ].filter(Boolean).join(" ");
+
+    return `
+      <button class="${cellClass}" data-player="${p.id}" data-zero="true" aria-label="${p.initials} Tour a zero (0 point)">
+        <span class="zero-emoji">🤡</span>
+        ${p.zeros > 0 ? `<span class="zero-badge font-chakra">${p.zeros}</span>` : ""}
+      </button>
+    `;
+  }).join("");
+
+  const zeroRow = `
+    <div class="sticky-col">
+      <div class="number-pill zero-pill">0</div>
+    </div>
+    ${zeroRowPlayerCells}
+  `;
+
   app.innerHTML = `
     <div class="space-y-4">
       <div class="flex items-center justify-between">
@@ -612,6 +713,7 @@ function renderGame() {
             <div class="sticky-col header-corner"></div>
             ${headers}
             ${rows}
+            ${zeroRow}
           </div>
         </div>
       </div>
@@ -651,6 +753,11 @@ function renderGame() {
         const playerId = Number(btn.dataset.player);
         const num = Number(btn.dataset.number);
         handleHit(playerId, num);
+      });
+    } else if (btn.dataset.zero) {
+      btn.addEventListener("click", () => {
+        const playerId = Number(btn.dataset.player);
+        handleZero(playerId);
       });
     }
   });
