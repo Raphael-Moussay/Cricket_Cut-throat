@@ -417,13 +417,13 @@ function renderStart() {
    */
   function createInputRow(initialValue = "") {
     const row = document.createElement("div");
-    row.className = "player-input-row";
+    row.className = "player-input-row w-full";
 
     const input = document.createElement("input");
     input.type = "text";
     input.maxLength = MAX_INITIALS_LENGTH;
     input.value = initialValue;
-    input.className = "input-shell flex-1 rounded-2xl px-4 py-3 text-lg uppercase tracking-widest text-white";
+    input.className = "input-shell flex-1 min-w-0 rounded-2xl px-4 py-3 text-lg uppercase tracking-widest text-white";
 
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
