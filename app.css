@@ -105,7 +105,14 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
   animation: playerRowFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.player-input-row input {
+  min-width: 0;
+  flex: 1 1 0%;
 }
 
 @keyframes playerRowFadeIn {
