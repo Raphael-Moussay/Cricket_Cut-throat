@@ -1,35 +1,56 @@
 :root {
-  --bg-a: #0b0f1a;
-  --bg-b: #141a2b;
-  --card: rgba(15, 23, 42, 0.7);
-  --accent: #f97316;
-  --accent-2: #22c55e;
-  --muted: #94a3b8;
-  --ink: #e2e8f0;
+  --bg-slate: #0e1218;
+  --card-slate: rgba(20, 26, 36, 0.88);
+  --sticky-slate: rgba(16, 21, 29, 0.98);
+  --border-chalk: rgba(255, 255, 255, 0.12);
+  --chalk-white: #f8fafc;
+  --amber-chalk: #fbbf24;
+  --emerald-chalk: #4ade80;
+  --crimson-chalk: #f87171;
 }
 
 body {
   font-family: "Space Grotesk", system-ui, sans-serif;
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(234, 179, 8, 0.18), transparent 55%),
-    radial-gradient(900px 500px at 90% 10%, rgba(56, 189, 248, 0.18), transparent 55%),
-    linear-gradient(135deg, var(--bg-a), var(--bg-b));
+  background-color: var(--bg-slate);
+  background-image: 
+    radial-gradient(circle at 50% 10%, rgba(251, 191, 36, 0.06) 0%, transparent 65%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 32px;
+}
+
+.font-oswald {
+  font-family: "Oswald", "Space Grotesk", sans-serif;
+}
+
+.font-chakra {
+  font-family: "Chakra Petch", monospace;
 }
 
 .app-title {
-  font-family: "Bebas Neue", "Space Grotesk", sans-serif;
-  letter-spacing: 0.08em;
+  font-family: "Oswald", sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .panel {
-  background: var(--card);
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  backdrop-filter: blur(10px);
+  background: var(--card-slate);
+  border: 1px solid var(--border-chalk);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .input-shell {
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-chalk);
+  background: rgba(12, 16, 22, 0.9);
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.input-shell:focus {
+  outline: none;
+  border-color: var(--amber-chalk);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
 }
 
 .board-scroll-container {
@@ -37,11 +58,11 @@ body {
   -webkit-overflow-scrolling: touch;
   padding-bottom: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
 }
 
 .board-scroll-container::-webkit-scrollbar {
-  height: 6px;
+  height: 5px;
 }
 
 .board-scroll-container::-webkit-scrollbar-track {
@@ -49,12 +70,8 @@ body {
 }
 
 .board-scroll-container::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: rgba(251, 191, 36, 0.2);
   border-radius: 999px;
-}
-
-.board-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
 }
 
 .board-grid {
@@ -67,15 +84,15 @@ body {
 .sticky-col {
   position: sticky;
   left: 0;
-  z-index: 10;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(8px);
+  z-index: 20;
+  background: var(--sticky-slate);
+  backdrop-filter: blur(14px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2px 1px;
   border-radius: 12px;
-  box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 0 12px -2px rgba(0, 0, 0, 0.65);
 }
 
 .sticky-col.header-corner {
@@ -110,125 +127,151 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.25);
   color: #f87171;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .player-remove-btn:hover {
-  background: rgba(239, 68, 68, 0.25);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(248, 113, 113, 0.22);
+  border-color: rgba(248, 113, 113, 0.4);
 }
 
 .player-remove-btn:active {
   transform: scale(0.95);
 }
 
+/* Authentic Dart Chalk Cell */
 .hit-cell {
   position: relative;
   min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.8);
-  transition: transform 0.12s ease, background 0.2s ease, border 0.2s ease;
+  border: 1px solid var(--border-chalk);
+  border-radius: 12px;
+  background: rgba(14, 18, 25, 0.75);
+  transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+  user-select: none;
 }
 
 .hit-cell:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
 }
 
 .hit-cell.closed {
-  background: rgba(34, 197, 94, 0.2);
-  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.4);
 }
 
 .hit-cell.dead {
-  opacity: 0.45;
+  opacity: 0.35;
 }
 
-.hit-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  border: 2px solid rgba(148, 163, 184, 0.6);
-  background: transparent;
-  box-shadow: inset 0 0 0 2px transparent;
+/* Authentic Chalk Symbols: /, ✕, ⨂ */
+.chalk-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  line-height: 1;
 }
 
-.hit-dot.on {
-  border-color: rgba(249, 115, 22, 0.9);
-  background: rgba(249, 115, 22, 0.9);
-  box-shadow: 0 0 8px rgba(249, 115, 22, 0.45);
+.mark-empty {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 20px;
 }
 
-.hit-dot.on.closed {
-  border-color: rgba(34, 197, 94, 0.9);
-  background: rgba(34, 197, 94, 0.9);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.45);
+.mark-slash {
+  color: #fde047;
+  font-size: 20px;
+  font-style: italic;
+  text-shadow: 0 0 6px rgba(253, 224, 71, 0.4);
+}
+
+.mark-cross {
+  color: #fbbf24;
+  font-size: 18px;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.mark-closed {
+  color: #4ade80;
+  font-size: 22px;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.6);
 }
 
 .number-pill {
   width: 100%;
   text-align: center;
-  border-radius: 999px;
-  padding: 6px 4px;
+  border-radius: 10px;
+  padding: 6px 2px;
+  font-family: "Oswald", sans-serif;
   font-weight: 700;
   text-transform: uppercase;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(249, 115, 22, 0.4);
-  color: #fdba74;
-  font-size: 12px;
-  letter-spacing: 0.04em;
+  background: rgba(20, 26, 36, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fef08a;
+  font-size: 14px;
+  letter-spacing: 0.05em;
 }
 
 .number-pill.dead {
-  border-color: rgba(148, 163, 184, 0.3);
-  color: var(--muted);
+  border-color: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  background: rgba(12, 16, 22, 0.4);
 }
 
 .score-card {
   border-radius: 14px;
   padding: 6px 3px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--border-chalk);
+  background: rgba(18, 23, 33, 0.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .player-initials {
+  font-family: "Oswald", sans-serif;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #cbd5f5;
+  color: #f8fafc;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.score-value {
+  font-family: "Chakra Petch", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .shanghai-btn {
   width: 100%;
   padding: 5px 2px;
   border-radius: 8px;
-  border: 1px solid rgba(249, 115, 22, 0.5);
-  background: rgba(249, 115, 22, 0.15);
-  color: #fde68a;
-  font-size: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.18), rgba(251, 191, 36, 0.06));
+  color: #fef08a;
+  font-family: "Oswald", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   line-height: 1.1;
   display: grid;
   gap: 1px;
   place-items: center;
   justify-items: center;
   text-align: center;
-  transition: transform 0.12s ease, background 0.2s ease, border 0.2s ease;
+  transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 .shanghai-btn span {
@@ -246,29 +289,13 @@ body {
   display: inline;
 }
 
-@media (max-width: 520px) {
-  .shanghai-btn {
-    font-size: 10px;
-    letter-spacing: 0.04em;
-    padding: 5px 3px;
-  }
-
-  .shanghai-break {
-    white-space: normal;
-  }
-
-  .shanghai-break .shanghai-num {
-    display: block;
-  }
-}
-
 .shanghai-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
 }
 
 .shanghai-btn.shanghai-alt {
-  border-color: rgba(148, 163, 184, 0.4);
-  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.3);
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.14), rgba(148, 163, 184, 0.04));
   color: #e2e8f0;
 }
 
@@ -276,101 +303,121 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(30, 41, 59, 0.8);
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-chalk);
+  font-family: "Oswald", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: #94a3b8;
 }
 
 .modal-panel {
-  background: linear-gradient(135deg, #fef08a, #fde047, #fbbf24);
+  background: linear-gradient(165deg, #18202c, #0e131a);
 }
 
 .history-row {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 12px;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(12, 16, 23, 0.7);
+  border: 1px solid var(--border-chalk);
 }
 
 .history-time {
-  font-size: 12px;
-  color: #94a3b8;
+  font-family: "Chakra Petch", monospace;
+  font-size: 11px;
+  color: #64748b;
   font-variant-numeric: tabular-nums;
 }
 
 .history-text {
-  font-size: 14px;
+  font-size: 13px;
   color: #e2e8f0;
 }
 
 .history-toggle {
-  border-radius: 999px;
-  padding: 4px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(15, 23, 42, 0.5);
-  color: #cbd5f5;
+  border-radius: 8px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-chalk);
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  font-family: "Oswald", sans-serif;
   font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
+  transition: all 0.15s ease;
+}
+
+.history-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
 }
 
 .ranking-row {
   display: grid;
-  grid-template-columns: 32px 1fr 48px;
+  grid-template-columns: 28px 1fr 54px;
   gap: 8px;
   align-items: center;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .ranking-rank {
+  font-family: "Oswald", sans-serif;
   font-weight: 700;
+  color: #fbbf24;
+  font-size: 15px;
 }
 
 .ranking-name {
-  font-weight: 600;
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 16px;
+  color: #f8fafc;
 }
 
 .ranking-score {
+  font-family: "Chakra Petch", monospace;
   text-align: right;
+  font-weight: 700;
+  color: #4ade80;
+  font-size: 15px;
   font-variant-numeric: tabular-nums;
 }
 
 .penalty-flash {
-  animation: penaltyFlash 0.9s ease;
+  animation: penaltyFlash 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .score-flash {
-  animation: scoreFlash 0.9s ease;
+  animation: scoreFlash 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes penaltyFlash {
   0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
-    border-color: rgba(239, 68, 68, 0.8);
-    background: rgba(239, 68, 68, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 18px 4px rgba(239, 68, 68, 0.4);
+    box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.9), 0 0 14px rgba(248, 113, 113, 0.5);
+    background: rgba(248, 113, 113, 0.22);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    box-shadow: none;
   }
 }
 
 @keyframes scoreFlash {
   0% {
     color: #f87171;
-    text-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+    text-shadow: 0 0 12px rgba(248, 113, 113, 0.8);
   }
   100% {
     color: #fde68a;

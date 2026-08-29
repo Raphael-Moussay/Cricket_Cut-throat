@@ -339,17 +339,22 @@ function checkVictory() {
 }
 
 /**
- * Generates the HTML string representing the 3 hit indicator dots for a target cell.
+ * Generates the HTML string representing authentic Cricket chalk marks for a target cell.
  * @param {number} hitCount - Number of registered hits (0 to 3).
  * @param {boolean} isCellClosed - Whether the cell is fully closed (3 hits).
- * @returns {string} HTML markup for hit dots.
+ * @returns {string} HTML markup for the chalk mark.
  */
 function renderHitDots(hitCount, isCellClosed) {
-  return [0, 1, 2].map(dotIndex => {
-    const onClass = hitCount > dotIndex ? "on" : "";
-    const closedClass = onClass && isCellClosed ? "closed" : "";
-    return `<span class="hit-dot ${onClass} ${closedClass}"></span>`;
-  }).join("");
+  if (hitCount >= HITS_TO_CLOSE) {
+    return `<span class="chalk-mark mark-closed">⨂</span>`;
+  }
+  if (hitCount === 2) {
+    return `<span class="chalk-mark mark-cross">✕</span>`;
+  }
+  if (hitCount === 1) {
+    return `<span class="chalk-mark mark-slash">/</span>`;
+  }
+  return `<span class="chalk-mark mark-empty">·</span>`;
 }
 
 /**
@@ -361,24 +366,24 @@ function renderStart() {
 
   app.innerHTML = `
     <div class="mx-auto max-w-xl">
-      <div class="panel rounded-3xl p-6 shadow-xl">
+      <div class="panel rounded-3xl p-6 shadow-2xl">
         <div class="flex items-center justify-between">
           <div>
-            <div class="app-title text-3xl">Cricket Cut-throat</div>
-            <p class="mt-1 text-sm text-slate-300">Tableau de bord mobile pour le mode Penalty.</p>
+            <div class="app-title text-3xl font-oswald text-amber-300">Cricket Cut-throat</div>
+            <p class="mt-1 text-xs sm:text-sm text-slate-300">Tableau de fléchettes traditionnel • Mode Penalty</p>
           </div>
-          <div class="hidden sm:block rounded-2xl bg-amber-400/20 px-3 py-2 text-xs uppercase tracking-widest text-amber-200">Cut-throat</div>
+          <div class="hidden sm:block rounded-xl bg-amber-400/15 border border-amber-400/30 px-3 py-1.5 text-xs font-oswald uppercase tracking-widest text-amber-300">Dart Club</div>
         </div>
 
         <div class="mt-8 space-y-5">
           <div>
             <div class="step-tag">Joueurs</div>
-            <label class="mt-2 block text-sm text-slate-300">Initiales des joueurs (saisie progressive)</label>
+            <label class="mt-2 block text-xs uppercase tracking-wider font-semibold text-slate-400">Inscrire les joueurs</label>
             <div id="playerInputsList" class="mt-3 space-y-3"></div>
           </div>
         </div>
 
-        <button id="startBtn" class="mt-8 w-full rounded-2xl bg-amber-400 px-4 py-4 text-lg font-bold text-slate-900 shadow-lg shadow-amber-400/20 hover:brightness-105 active:scale-[0.99] transition-all">Démarrer la partie</button>
+        <button id="startBtn" class="mt-8 w-full rounded-2xl bg-amber-400 px-4 py-4 text-lg font-oswald font-bold uppercase tracking-wider text-slate-950 shadow-lg shadow-amber-400/20 hover:bg-amber-300 active:scale-[0.99] transition-all">Lancer la partie</button>
       </div>
     </div>
   `;
@@ -584,10 +589,10 @@ function renderGame() {
   app.innerHTML = `
     <div class="space-y-4">
       <div class="flex items-center justify-between">
-        <button id="newGameBtn" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm hover:bg-slate-700 active:scale-95 transition-all">Nouvelle partie</button>
+        <button id="newGameBtn" class="rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-xs font-oswald uppercase font-bold text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all">Nouvelle partie</button>
         <div class="flex items-center gap-2">
-          <button id="historyBtn" class="rounded-2xl bg-slate-800 px-4 py-2 text-sm hover:bg-slate-700 active:scale-95 transition-all">Historique</button>
-          <button id="undoBtn" class="rounded-2xl bg-amber-400 px-4 py-2 text-sm font-bold text-slate-900 hover:brightness-105 active:scale-95 transition-all">Annuler</button>
+          <button id="historyBtn" class="rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-xs font-oswald uppercase font-bold text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all">Historique</button>
+          <button id="undoBtn" class="rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-oswald uppercase font-bold text-slate-950 shadow-md shadow-amber-400/20 hover:bg-amber-300 active:scale-95 transition-all">Annuler</button>
         </div>
       </div>
 
