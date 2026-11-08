@@ -38,6 +38,98 @@
     </div>
   </div>
 
+  <!-- Rules Modal -->
+  <div id="rulesModal" class="fixed inset-0 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4 z-50">
+    <div class="modal-panel w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-7 shadow-2xl border border-white/10 text-white custom-scrollbar">
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">🎯</span>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-black font-chakra tracking-wide text-white">RÈGLES DU JEU</h2>
+            <p class="text-xs text-emerald-400 font-medium">Cricket Cut-throat & Pénalités</p>
+          </div>
+        </div>
+        <button id="rulesClose" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors" aria-label="Fermer les règles">
+          ✕
+        </button>
+      </div>
+
+      <div class="mt-5 space-y-4 text-sm text-slate-300">
+        <!-- Goal -->
+        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5">
+          <div class="flex items-center gap-2 font-chakra font-bold text-amber-400 text-sm uppercase tracking-wide">
+            <span>🏆</span> But du jeu (Cut-throat)
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Avoir <strong class="text-white">fermé toutes les cibles</strong> (15 à 20 + Bull au centre) tout en ayant le <strong class="text-emerald-400">score de points le plus bas</strong>.
+          </p>
+        </div>
+
+        <!-- How to close -->
+        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5">
+          <div class="flex items-center gap-2 font-chakra font-bold text-emerald-400 text-sm uppercase tracking-wide">
+            <span>🎯</span> Fermeture des Cibles
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Chaque cible (15, 16, 17, 18, 19, 20 et Bull au centre de la cible) doit être touchée <strong class="text-white">3 fois</strong> :
+          </p>
+          <ul class="text-xs text-slate-400 space-y-1 pl-3 border-l-2 border-emerald-500/40">
+            <li><strong class="text-slate-200">Simple</strong> = 1 touche (⨀)</li>
+            <li><strong class="text-slate-200">Double</strong> = 2 touches (⨁)</li>
+            <li><strong class="text-slate-200">Triple</strong> = 3 touches (⨂ fermé !)</li>
+            <li><strong class="text-slate-200">Bull (Centre)</strong> = Demi-bulle extérieure (1 touche / 25 pts), Bulle centrale rouge (2 touches / 50 pts)</li>
+          </ul>
+        </div>
+
+        <!-- Cut-throat mechanic -->
+        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5">
+          <div class="flex items-center gap-2 font-chakra font-bold text-rose-400 text-sm uppercase tracking-wide">
+            <span>⚔️</span> La Règle Cut-throat (Pénalités)
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Dès que vous avez <strong class="text-white">fermé un numéro</strong>, toute nouvelle touche sur ce numéro <strong class="text-rose-400">donne ses points de pénalité</strong> à tous les adversaires qui ne l'ont pas encore fermé !
+          </p>
+        </div>
+
+        <!-- Shanghai -->
+        <div class="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-2">
+          <div class="flex items-center gap-2 font-chakra font-bold text-amber-300 text-sm uppercase tracking-wide">
+            <span>⚡</span> Shanghai (+50 pts)
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Réalisé lorsqu'un joueur place ses 3 fléchettes sur le <strong class="text-white">même numéro</strong> avec un <strong class="text-amber-400">Simple</strong>, un <strong class="text-amber-400">Double</strong> et un <strong class="text-amber-400">Triple</strong>.
+            <br>👉 Inflige immédiatement <strong class="text-amber-300">+50 points de pénalité</strong> à tous les adversaires.
+          </p>
+        </div>
+
+        <!-- Shanghai décalé -->
+        <div class="p-4 rounded-2xl bg-teal-500/5 border border-teal-500/20 space-y-2">
+          <div class="flex items-center gap-2 font-chakra font-bold text-teal-300 text-sm uppercase tracking-wide">
+            <span>🔄</span> Shanghai Décalé (+25 pts)
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Réalisé en plaçant un <strong class="text-teal-400">Simple</strong>, un <strong class="text-teal-400">Double</strong> et un <strong class="text-teal-400">Triple</strong>, mais répartis sur <strong class="text-white">3 numéros décalés régulièrement</strong> (ex: 3 numéros consécutifs côte à côte, ou séparés d'un intervalle fixe).
+            <br>👉 Inflige immédiatement <strong class="text-teal-300">+25 points de pénalité</strong> à tous les adversaires.
+          </p>
+        </div>
+
+        <!-- Clown zero -->
+        <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1.5">
+          <div class="flex items-center gap-2 font-chakra font-bold text-purple-400 text-sm uppercase tracking-wide">
+            <span>🤡</span> La Case Zéro
+          </div>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Si un joueur ne touche aucune cible valide durant son tour, appuyez sur sa case <strong class="text-white">0 🤡</strong> pour enregistrer son tour à blanc dans l'historique et compter les clowns pour le bilan final !
+          </p>
+        </div>
+      </div>
+
+      <button id="rulesGotIt" class="mt-6 w-full rounded-2xl bg-white/10 hover:bg-white/15 px-4 py-3.5 text-sm font-chakra font-bold uppercase tracking-wider text-white border border-white/10 transition-all">
+        Compris, retour au jeu
+      </button>
+    </div>
+  </div>
+
   <script src="app.js" defer></script>
 </body>
 </html>

@@ -124,6 +124,38 @@ const winSubtitle = document.getElementById("winSubtitle");
 const winRanking = document.getElementById("winRanking");
 /** @type {HTMLElement} Victory modal close button */
 const winClose = document.getElementById("winClose");
+/** @type {HTMLElement|null} Rules modal backdrop container */
+const rulesModal = document.getElementById("rulesModal");
+/** @type {HTMLElement|null} Rules modal close button */
+const rulesClose = document.getElementById("rulesClose");
+/** @type {HTMLElement|null} Rules modal confirmation button */
+const rulesGotIt = document.getElementById("rulesGotIt");
+
+/**
+ * Opens the rules modal and triggers haptic feedback.
+ * @returns {void}
+ */
+function openRulesModal() {
+  if (rulesModal) {
+    rulesModal.classList.remove("hidden");
+    rulesModal.classList.add("flex");
+    triggerHapticFeedback(VIBRATION_HIT_MS);
+  }
+}
+
+/**
+ * Closes the rules modal.
+ * @returns {void}
+ */
+function closeRulesModal() {
+  if (rulesModal) {
+    rulesModal.classList.add("hidden");
+    rulesModal.classList.remove("flex");
+  }
+}
+
+if (rulesClose) rulesClose.addEventListener("click", closeRulesModal);
+if (rulesGotIt) rulesGotIt.addEventListener("click", closeRulesModal);
 
 /**
  * @typedef {Object} Player
@@ -521,8 +553,15 @@ function renderStart() {
 
         <div class="mt-8 space-y-5">
           <div>
-            <div class="step-tag">Joueurs</div>
-            <label class="mt-2 block text-xs uppercase tracking-wider font-semibold text-slate-400">Initiales des participants</label>
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="step-tag">Joueurs</div>
+                <label class="mt-2 block text-xs uppercase tracking-wider font-semibold text-slate-400">Initiales des participants</label>
+              </div>
+              <button id="rulesBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-chakra font-bold text-slate-300 hover:text-white border border-white/10 transition-all active:scale-95">
+                <span>📖</span> Règles du jeu
+              </button>
+            </div>
             <div id="playerInputsList" class="mt-3 space-y-3"></div>
           </div>
         </div>
@@ -534,6 +573,10 @@ function renderStart() {
 
   const playerInputsList = document.getElementById("playerInputsList");
   const startBtn = document.getElementById("startBtn");
+  const rulesBtn = document.getElementById("rulesBtn");
+  if (rulesBtn) {
+    rulesBtn.addEventListener("click", openRulesModal);
+  }
 
   /**
    * Refreshes placeholders and button visibility for all player rows.
@@ -756,7 +799,10 @@ function renderGame() {
   app.innerHTML = `
     <div class="space-y-4">
       <div class="flex items-center justify-between">
-        <button id="newGameBtn" class="rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-xs font-chakra uppercase font-bold text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all">Nouvelle partie</button>
+        <div class="flex items-center gap-2">
+          <button id="newGameBtn" class="rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-xs font-chakra uppercase font-bold text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all">Nouvelle partie</button>
+          <button id="gameRulesBtn" class="rounded-xl bg-white/5 border border-white/10 px-2.5 py-2 text-xs font-chakra font-bold text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all" title="Règles du jeu">📖</button>
+        </div>
         <div class="flex items-center gap-2">
           <button id="historyBtn" class="rounded-xl bg-white/5 border border-white/10 px-3.5 py-2 text-xs font-chakra uppercase font-bold text-slate-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all">Historique</button>
           <button id="undoBtn" class="rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-chakra uppercase font-bold text-slate-950 shadow-md shadow-amber-400/20 hover:brightness-110 active:scale-95 transition-all">Annuler</button>
@@ -803,6 +849,11 @@ function renderGame() {
     winModal.classList.remove("flex");
     renderStart();
   });
+
+  const gameRulesBtn = document.getElementById("gameRulesBtn");
+  if (gameRulesBtn) {
+    gameRulesBtn.addEventListener("click", openRulesModal);
+  }
 
   document.getElementById("undoBtn").addEventListener("click", undoLast);
 

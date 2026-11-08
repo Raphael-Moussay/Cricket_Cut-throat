@@ -1,25 +1,61 @@
 {
+  "id": "/cricket-cut-throat",
   "name": "Cricket Cut-throat",
   "short_name": "Cricket",
-  "description": "Tableau de score pour le mode Cricket Cut-throat aux fléchettes",
+  "description": "Tableau de score interactif et moderne pour vos parties de fléchettes en mode Cricket Cut-throat.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#090b10",
   "theme_color": "#090b10",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": [
+    "games",
+    "sports",
+    "entertainment"
+  ],
   "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/screenshot-start.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Écran de démarrage et choix des joueurs"
     },
     {
-      "src": "icons/icon.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
+      "src": "screenshots/screenshot-game.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tableau des scores et cibles du Cricket"
     }
   ]
 }
