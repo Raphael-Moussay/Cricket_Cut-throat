@@ -1,0 +1,19 @@
+{
+  "name": "cricket_game",
+  "version": "1.0.0",
+  "description": "Petite interface mobile pour jouer au mode \"Cut-throat\" de Cricket (darts).",
+  "main": "app.js",
+  "scripts": {
+    "test": "node scratch/test_game.js",
+    "build:web": "mkdir -p dist && cp index.html app.css app.js manifest.json sw.js dist/ && cp -r icons screenshots dist/",
+    "sync": "npm run build:web && npx cap sync"
+  },
+  "keywords": ["darts", "cricket", "cut-throat", "scoreboard", "pwa", "android"],
+  "author": "Raphael Moussay",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^7.6.10",
+    "@capacitor/core": "^8.6.0"
+  }
+}

@@ -1,3 +1,22 @@
 .vscode/
 *.db
 .agent/
+node_modules/
+
+# Android build outputs & local config
+.gradle/
+local.properties
+android/local.properties
+android/app/build/
+android/build/
+android/.gradle/
+android-sdk/
+
+# Capacitor web distribution build
+dist/
+
+# Signing keys & binaries (keep private)
+release/*.keystore
+release/*.apk
+release/*.aab
+release/
