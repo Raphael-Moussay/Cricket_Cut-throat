@@ -3,7 +3,7 @@
  * Provides offline capabilities and instant loading.
  */
 
-const CACHE_NAME = "cricket-cutthroat-v2";
+const CACHE_NAME = "cricket-cutthroat-v3";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
@@ -13,8 +13,11 @@ const STATIC_ASSETS = [
   "./icons/icon.svg",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
-  "./screenshots/screenshot-start.png",
-  "./screenshots/screenshot-game.png"
+  "./screenshots/screenshot-1.png",
+  "./screenshots/screenshot-2.png",
+  "./screenshots/screenshot-3.png",
+  "./screenshots/screenshot-4.png",
+  "./screenshots/screenshot-5.png"
 ];
 
 self.addEventListener("install", (event) => {

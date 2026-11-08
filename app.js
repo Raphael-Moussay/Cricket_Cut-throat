@@ -546,7 +546,7 @@ function renderStart() {
         <div class="flex items-center justify-between">
           <div>
             <div class="app-title text-2xl sm:text-3xl text-white">Cricket Cut-throat</div>
-            <p class="mt-1 text-xs sm:text-sm text-slate-400">Mode Penalty officiel • Arbitrage de précision</p>
+            <p class="mt-1 text-xs sm:text-sm text-slate-400">Compteur de score pour fléchettes</p>
           </div>
           <div class="hidden sm:block rounded-xl bg-emerald-500/10 border border-emerald-500/25 px-3 py-1.5 text-xs font-chakra font-bold uppercase tracking-widest text-emerald-400">Cut-throat Pro</div>
         </div>

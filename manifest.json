@@ -44,18 +44,39 @@
   ],
   "screenshots": [
     {
-      "src": "screenshots/screenshot-start.png",
+      "src": "screenshots/screenshot-1.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Écran de démarrage et choix des joueurs"
+      "label": "Cricket Cut-throat - Tableau de score"
     },
     {
-      "src": "screenshots/screenshot-game.png",
+      "src": "screenshots/screenshot-2.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Tableau des scores et cibles du Cricket"
+      "label": "Configuration rapide des joueurs"
+    },
+    {
+      "src": "screenshots/screenshot-3.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tableau des scores et pénalités Cut-throat"
+    },
+    {
+      "src": "screenshots/screenshot-4.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Historique des tirs et compteur de clowns"
+    },
+    {
+      "src": "screenshots/screenshot-5.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Règles officielles et Shanghai"
     }
   ]
 }
